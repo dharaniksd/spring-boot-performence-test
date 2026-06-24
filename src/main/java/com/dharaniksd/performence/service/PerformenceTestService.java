@@ -131,7 +131,7 @@ public class PerformenceTestService {
 
         long start = System.currentTimeMillis();
         byte[] block = new byte[clamped * 1024 * 1024];
-        // Touch the array to prevent JIT from optimising the allocation away.
+        // Touch the array to prevent JIT from optimizing the allocation away.
         Arrays.fill(block, (byte) 1);
         long elapsed = System.currentTimeMillis() - start;
 
