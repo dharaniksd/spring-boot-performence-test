@@ -1,0 +1,36 @@
+# =============================================================================
+# DEV profile – small capacity, verbose logging for local development
+# Activate with: -Dspring.profiles.active=dev  or  SPRING_PROFILES_ACTIVE=dev
+# =============================================================================
+
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 20
+      min-spare: 5
+    accept-count: 20
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"   # expose everything in dev for convenience
+
+logging:
+  level:
+    root: DEBUG
+    com.dharaniksd.performence: DEBUG
+    org.springframework.web: DEBUG
+
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 600000
+      connection-timeout: 30000

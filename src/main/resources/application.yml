@@ -1,0 +1,87 @@
+# =============================================================================
+# Base application configuration – shared across all profiles
+# Profile-specific files (application-dev.yml, application-perf.yml,
+# application-prod.yml) override values as needed.
+# =============================================================================
+
+spring:
+  application:
+    name: spring-boot-performence-test
+
+  # Graceful shutdown: let in-flight requests complete before JVM exit
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+  # Compression
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  # Jackson
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: 8080
+  shutdown: graceful
+
+  # Tomcat connector tuning (baseline – overridden per profile)
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+    accept-count: 100
+    connection-timeout: 20000
+    keep-alive-timeout: 60000
+    max-keep-alive-requests: 100
+
+  # Response compression
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/plain,text/xml
+    min-response-size: 1024
+
+  # Request limits
+  max-http-request-header-size: 8KB
+
+# =============================================================================
+# Actuator / Observability
+# =============================================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,threaddump,heapdump,env,configprops
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when_authorized
+    heapdump:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.75, 0.95, 0.99
+    tags:
+      application: ${spring.application.name}
+
+# =============================================================================
+# Logging – verbose at base level; perf/prod profiles disable debug
+# =============================================================================
+logging:
+  level:
+    root: INFO
+    com.dharaniksd.performence: DEBUG
+
+# =============================================================================
+# App metadata (shows in /actuator/info)
+# =============================================================================
+info:
+  app:
+    name: ${spring.application.name}
+    description: Performance-tuned Spring Boot microservice with benchmark test APIs
+    java-version: "@java.version@"
